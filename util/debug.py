@@ -1,4 +1,4 @@
-# RT Ext - Debug
+# Free RT Ext - Debug
 
 from discord.ext import commands
 import discord
@@ -63,18 +63,20 @@ class Debug(commands.Cog):
         printer = Printer()
         exec(
             "async def _program():\n  {}\n{}"
-                .format(
-                    '\n  '.join(code.splitlines()),
-                    "self._program = _program\ndel _program"
-                ),
-            {"bot": self.bot, "ctx": ctx, "discord": discord,
-             "self": self, "print": printer.print}
+            .format(
+                '\n  '.join(code.splitlines()),
+                "self._program = _program\ndel _program"
+            ),
+            {
+                "bot": self.bot, "ctx": ctx, "discord": discord,
+                "self": self, "print": printer.print
+            }
         )
         result = await self._program()
         async with async_open(self.OUTPUT_PATH, "w") as f:
             await f.write(
                 "<<<STDOUT>>>\n{}\n<<<RETURN>>>\n{}"
-                    .format(printer.output, str(result))
+                .format(printer.output, str(result))
             )
         await ctx.reply(file=discord.File(self.OUTPUT_PATH))
         await os.remove(self.OUTPUT_PATH)
@@ -108,7 +110,7 @@ class Debug(commands.Cog):
     @executor_function
     def make_monitor_embed(self):
         embed = discord.Embed(
-            title="RT-Run info",
+            title="Free-RT-Run info",
             description="Running on Ubuntu Linux",
             color=0x0066ff
         )
@@ -135,8 +137,8 @@ class Debug(commands.Cog):
         )
 
 
-def setup(bot):
-    bot.add_cog(Debug(bot))
+async def setup(bot):
+    await bot.add_cog(Debug(bot))
 
 
 if __name__ == "__main__":

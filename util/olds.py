@@ -1,15 +1,16 @@
-# RT utils - Old features
+# Free RT Util - Old features
 
 from typing import Optional, Union, Tuple, List
 
-from discord.ext import commands, tasks # type: ignore
+from discord.ext import commands, tasks  # type: ignore
 import discord
 
 from pymysql.err import OperationalError
 from . import isintable
 
 # from .slash import Context as SlashContext
-# from .ext import componesy
+from .ext import componesy
+from .webhooks import webhook_send
 from .cacher import CacherPool
 
 
@@ -59,12 +60,12 @@ def clean_content(content: str, guild: discord.Guild) -> str:
     return FakeMessageForCleanContent(guild, content).clean_content
 
 
-Context = Union[SlashContext, commands.Context]
+Context = Union[commands.Context]
 
 
 # webhook_sendを新しく定義する。
-discord.abc.Messageable.webhook_send = webhook_send # type: ignore
-discord.ext.easy = componesy # type: ignore
+discord.abc.Messageable.webhook_send = webhook_send  # type: ignore
+discord.ext.easy = componesy  # type: ignore
 
 
 def lib_setup(bot, only: Union[Tuple[str, ...], List[str]] = []):
@@ -88,6 +89,7 @@ def lib_setup(bot, only: Union[Tuple[str, ...], List[str]] = []):
 def tasks_extend():
     if not getattr(tasks.Loop, "_util_extended", False):
         default = tasks.Loop.__init__
+
         def _init(self, *args, **kwargs):
             default(self, *args, **kwargs)
             self.add_exception_type(OperationalError)
@@ -100,7 +102,6 @@ def sendKwargs(ctx, **kwargs):
     if isinstance(ctx, commands.Context):
         for key in list(kwargs.keys()):
             if (key not in discord.abc.Messageable.send.__annotations__
-                    and key in discord.InteractionResponse
-                        .send_message.__annotations__):
+                    and key in discord.InteractionResponse.send_message.__annotations__):
                 del kwargs[key]
     return kwargs

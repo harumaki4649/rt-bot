@@ -3,7 +3,8 @@
 from discord.ext import commands, tasks
 import discord
 
-from util import mysql, DatabaseManager
+from util import mysql
+from util.mysql_manager import DatabaseManager
 from typing import List
 from time import time
 
@@ -173,5 +174,5 @@ class Locker(commands.Cog, DataManager):
                 await self.delete(channel.id)
 
 
-def setup(bot):
-    bot.add_cog(Locker(bot))
+async def setup(bot):
+    await bot.add_cog(Locker(bot))

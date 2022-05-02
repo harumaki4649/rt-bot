@@ -6,7 +6,7 @@ from discord.ext import commands
 import discord
 
 from collections import defaultdict
-from util import DatabaseManager
+from util.mysql_manager import DatabaseManager
 from functools import wraps
 from time import time
 
@@ -325,8 +325,8 @@ class GlobalChat(commands.Cog, DataManager):
             for sticker in message.stickers:
                 embeds.append(
                     discord.Embed(color=message.author.color)
-                        .set_image(url=sticker.url)
-                        .set_footer(text="添付されたスタンプ")
+                    .set_image(url=sticker.url)
+                    .set_footer(text="添付されたスタンプ")
                 )
 
         # 送る。
@@ -386,5 +386,5 @@ class GlobalChat(commands.Cog, DataManager):
             await self.send(message, row)
 
 
-def setup(bot):
-    bot.add_cog(GlobalChat(bot))
+async def setup(bot):
+    await bot.add_cog(GlobalChat(bot))

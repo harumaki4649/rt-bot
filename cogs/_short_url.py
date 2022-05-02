@@ -6,6 +6,7 @@ import discord
 from util import DatabaseManager, WebManager
 
 from sanic.response import redirect
+from urllib.parse import urlparse
 from random import sample, choice
 from time import time
 
@@ -59,6 +60,7 @@ class DataManager(DatabaseManager):
         target = {"Custom": custom}
         assert await cursor.exists(self.DB, target), "見つかりませんでした。"
         return (await cursor.get_data(self.DB, target))[1]
+
 
 CHARS = list(range(41, 91)) + list(range(61, 123))
 
@@ -223,14 +225,16 @@ class ShortURL(commands.Cog, DataManager):
         Aliases
         -------
         rm, delete, del"""
-        if "http://rtbo.tk/" in custom:
-            custom = custom[16:]
         try:
-            await self.remove(ctx.author.id, custom)
+            url = urlparse(custom)
+        except ValueError:
+            return await ctx.reply("正しいURLを入力してください。")
+        try:
+            await self.remove(ctx.author.id, url.path)
         except AssertionError:
             await ctx.reply("その短縮URLが見つかりませんでした。")
         else:
-            await ctx.reply("その短縮URLを削除しました。")
+            await ctx.reply(f"短縮URL`{url.path}`を削除しました。")
 
     ROUTINE_URLS = (
         "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -252,5 +256,5 @@ class ShortURL(commands.Cog, DataManager):
         return redirect(url)
 
 
-def setup(bot):
-    bot.add_cog(ShortURL(bot))
+async def setup(bot):
+    await bot.add_cog(ShortURL(bot))

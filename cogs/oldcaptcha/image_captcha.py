@@ -1,4 +1,4 @@
-# RT - Captcha Image Manager
+# Free RT - Captcha Image Manager
 
 from typing import TYPE_CHECKING, Optional, Dict, Tuple
 
@@ -47,10 +47,10 @@ class ImageCaptcha(ImageCaptcha):
         path = f"data/captcha/{name}.png"
         self.queue[name] = (await self.create_image(path), time())
         await channel.send(
-            {"ja": f"{member.mention}, 画像にある数字を入力してください。" \
-                f"\n放置すると無効になります。",
-             "en": f"{member.mention}, Please, type number on the picture." \
-                 "\nIf you leave it, it will become invalid."},
+            {"ja": f"{member.mention}, 画像にある数字を入力してください。"
+                   "\n放置すると無効になります。",
+             "en": f"{member.mention}, Please, type number on the picture."
+                   "\nIf you leave it, it will become invalid."},
             target=member.id, file=discord.File(path)
         )
         await remove(path)
@@ -68,9 +68,9 @@ class ImageCaptcha(ImageCaptcha):
                     except Exception as e:
                         await message.channel.send(
                             {"ja": (f"{message.author.mention}, 役職を付与することができませんでした。\n"
-                                    "付与する役職の位置がRTより下にあるか確認してください。\n"
+                                    "付与する役職の位置がFree RTより下にあるか確認してください。\n"
                                     f"エラーコード：`{e}`"),
-                             "en": f"{message.author.mention}, Failed, make sure that the role position below the RT role position."}
+                             "en": f"{message.author.mention}, Failed, make sure that the role position below the Free RT role position."}
                         )
                     else:
                         await message.channel.send(

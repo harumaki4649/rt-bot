@@ -7,7 +7,8 @@ from random import choice
 from discord.ext import commands
 import discord
 
-from util import RT, mysql, DatabaseManager
+from util import RT, mysql
+from util.mysql_manager import DatabaseManager
 from util.page import EmbedPage
 from util.ext import componesy
 
@@ -258,5 +259,5 @@ class GlobalBan(commands.Cog, DataManager):
         await ctx.reply("削除しました。")
 
 
-def setup(bot):
-    bot.add_cog(GlobalBan(bot))
+async def setup(bot):
+    await bot.add_cog(GlobalBan(bot))

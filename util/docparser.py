@@ -1,8 +1,9 @@
-# rt util - Doc Parser
+# Free RT Util - Doc Parser
 
 from typing import Literal, Optional, Union, Callable, Tuple
 
 from inspect import cleandoc
+import re
 
 
 class DocParser:
@@ -54,22 +55,15 @@ class DocParser:
 
     def _split(self, text: str, target: str = ":") -> Tuple[str, str, int, int]:
         # targetの左と右を分けてtargetの周りにある空白の数を取得する。
-        colon_index = text.find(":")
-        left, right = text[:colon_index], text[colon_index + 1:]
-        del colon_index
-        left_count, right_count = 0, 0
-        for i in range(len(left)):
-            if left[0 - (i + 1)] == " ":
-                left_count += 1
-            else:
-                break
-        for char in right:
-            if char == " ":
-                right_count += 1
-            else:
-                break
-        return (left[:0 - left_count], right[right_count:],
-                left_count, right_count)
+        match = re.search(" *" + target + " *", text)  # 空白に挟まれたコロンの検出。
+        if not match:
+            raise ValueError("見つからなかった。。。")
+
+        left, right = text[:match.start()], text[match.end():]
+        mg = match.group()
+        left_count, right_count = len(mg[:mg.find(":")]), len(mg[mg.find(":") + 1:])
+
+        return left, right, left_count, right_count
 
     def _colon_parser(self, line: str, now_lang: str) -> str:
         # ITEM_REPLACE_TEXTSにある文字列は日本語に置き換える。
@@ -77,7 +71,8 @@ class DocParser:
             if type_name in line:
                 line = line.replace(
                     type_name, self.ITEM_REPLACE_TEXTS[now_lang]
-                        .get(type_name, type_name))
+                    .get(type_name, type_name)
+                )
         # 名前の部分を**で囲む。
         if ":" in line:
             left, right, left_count, right_count = self._split(line)
@@ -89,8 +84,8 @@ class DocParser:
     def _item_parser(self, line: str, now: dict, before: dict) -> str:
         # 項目に含まれているものを最適なマークダウンに変換するものです。
         if now["item"] in ("Parameters", "Raises", "Returns", "See Also"):
-            if  (all(char in self.indent_type for char in line[:self.indent])
-                 if len(line) >= self.indent else line == ""):
+            if (all(char in self.indent_type for char in line[:self.indent])
+                    if len(line) >= self.indent else line == ""):
                 # 引数の説明。
                 return line[self.indent:]
             elif all(char in (" ", "*") for char in line[:-2]):
@@ -197,9 +192,9 @@ class DocParser:
                     now["item"] = before["line"]
                     t = self.HEADDINGS[now["lang"]].get(now["item"], now["item"]) + "\n"
                     text[now["lang"]] += t
-            elif (line not in self.HEADDINGS[now["lang"]] and (
-                        now["code"] or not line.startswith("!"))
-                    and now["item"] != "!"):
+            elif (line not in self.HEADDINGS[now["lang"]]
+                  and (now["code"] or not line.startswith("!"))
+                  and now["item"] != "!"):
                 # もし改行のみで空白2個が後ろにないなら改行を空白二個と置き換える。
                 if not line.endswith("  ") and not now["code"]:
                     line = line + "  "

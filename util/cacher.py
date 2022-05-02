@@ -1,19 +1,18 @@
-# RT - Cacher, キャッシュ管理
+# Free RT - Cacher, キャッシュ管理
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar, Any, Optional
+from typing import Generic, TypeVar, Any, Optional
 from collections.abc import Iterator, Callable
 
 from time import time
 
 from discord.ext import tasks
 
-if TYPE_CHECKING:
-    from util import RT
-
 
 DataT = TypeVar("DataT")
+
+
 class Cache(Generic[DataT]):
     "キャッシュのデータを格納するためのクラスです。"
 
@@ -32,8 +31,10 @@ class Cache(Generic[DataT]):
 
 
 KeyT, ValueT = TypeVar("KeyT"), TypeVar("ValueT")
+
+
 class Cacher(Generic[KeyT, ValueT]):
-    "キャッシュを管理するためのクラスです。\n注意：CacherPoolと兼用しないとデータは自然消滅しません。"
+    "キャッシュを管理するためのクラスです。\n注意: CacherPoolと兼用しないとデータは自然消滅しません。"
 
     def __init__(self, lifetime: float, default: Optional[Callable[[], Any]] = None):
         self.data: dict[KeyT, Cache[ValueT]] = {}

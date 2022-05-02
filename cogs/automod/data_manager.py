@@ -1,4 +1,4 @@
-# RT AutoMod - Data Manager
+# Free RT AutoMod - Data Manager
 
 from typing import TYPE_CHECKING, NewType, TypedDict, Literal, Union, Optional, Dict, Tuple, List
 
@@ -18,15 +18,17 @@ if TYPE_CHECKING:
 
 
 Warn = NewType("Warn", float)
+
+
 class GuildData(TypedDict, total=False):
     "GuildDataの辞書の型です。"
 
     ban: Warn
     mute: Warn
-    invites: NewType("Invites", List[int])
+    invites: NewType("invites", List[int])
     ignore: List[int]
     bolt: float
-    invite_deleter: NewType("InviteDeleter", List[str])
+    invite_deleter: NewType("invite_deleter", List[str])
     emoji: int
 
 

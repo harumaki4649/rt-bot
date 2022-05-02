@@ -1,4 +1,4 @@
-# RT - Page, Notes: これはパブリックドメインとします。
+# Free RT - Page, Notes: これはパブリックドメインとします。
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from typing import Literal, Optional, Any
 
 import discord
 
-from . import TimeoutView
+from .views import TimeoutView
 
 
 class BasePage(TimeoutView):
@@ -18,7 +18,7 @@ class BasePage(TimeoutView):
         self, mode: Literal["dl", "l", "r", "dr"], interaction: discord.Interaction
     ):
         self.page = self.page + \
-            (-1 if mode.endswith("l") else 1)*((mode[0] == "d")+1)
+            (-1 if mode.endswith("l") else 1) * ((mode[0] == "d") + 1)
 
     @discord.ui.button(emoji="⏪")
     async def dash_left(self, _, interaction: discord.Interaction):

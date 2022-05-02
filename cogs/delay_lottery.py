@@ -3,7 +3,8 @@
 from discord.ext import commands, tasks
 import discord
 
-from util import RT, DatabaseManager
+from util import RT
+from util.mysql_manager import DatabaseManager
 from time import time
 
 
@@ -188,10 +189,7 @@ class DelayLottery(commands.Cog, DataManager):
                                 members = (await message.reactions[0].users().flatten())[1:]
                                 await self.bot.cogs["ServerTool"].lottery(
                                     await self.bot.get_context(message),
-                                    (length if (
-                                        c := int(message.content)
-                                    ) > (length := len(members))
-                                    else c),
+                                    (length if (c := int(message.content)) > (length := len(members)) else c),
                                     target=members
                                 )
                     else:
@@ -220,5 +218,5 @@ class DelayLottery(commands.Cog, DataManager):
         self.lottery_worker.cancel()
 
 
-def setup(bot):
-    bot.add_cog(DelayLottery(bot))
+async def setup(bot):
+    await bot.add_cog(DelayLottery(bot))

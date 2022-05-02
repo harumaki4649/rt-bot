@@ -3,7 +3,8 @@
 from discord.ext import commands, tasks
 import discord
 
-from util import RT, DatabaseManager
+from util import RT
+from util.mysql_manager import DatabaseManager
 from time import time
 
 
@@ -169,5 +170,5 @@ class DelayDelete(commands.Cog, DataManager):
                 await self.delete(row[0], row[1])
 
 
-def setup(bot):
-    bot.add_cog(DelayDelete(bot))
+async def setup(bot):
+    await bot.add_cog(DelayDelete(bot))

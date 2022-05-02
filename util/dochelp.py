@@ -64,7 +64,7 @@ async def soudayo(ctx, mode="便乗"):
     await ctx.reply(f"そうだよ({mode})")
 
 # 上のコマンドにあるドキュメンテーションがヘルプリストに自動で追加されます。"""
-
+# Free RT Util - Doc help
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -78,7 +78,7 @@ import discord
 from aiofiles import open as async_open
 from ujson import loads, dumps
 
-from .docperser import DocParser
+from .docparser import DocParser
 from data import PERMISSION_TEXTS
 
 
@@ -94,6 +94,7 @@ def make_new_hp(original):
     @wraps(original)
     def new_hp(**perms):
         decorator = original(**perms)
+
         @wraps(decorator)
         def new_decorator(func):
             if func.__doc__ and "!lang en" in func.__doc__:
@@ -104,6 +105,8 @@ def make_new_hp(original):
             return decorator(func)
         return new_decorator
     return new_hp
+
+
 commands.has_permissions = make_new_hp(commands.has_permissions)
 commands.has_guild_permissions = make_new_hp(commands.has_guild_permissions)
 
@@ -154,8 +157,11 @@ class DocHelp(commands.Cog):
         -------
         List[discord.Embed]"""
         text, embeds, length = "", [], 0
-        make_embed = lambda text: discord.Embed(
-            title=f"**{command_name}**", description=text, **kwargs)
+
+        def make_embed(text):
+            return discord.Embed(
+                title=f"**{command_name}**", description=text, **kwargs
+            )
 
         for line in doc.splitlines():
             is_item = line.startswith("## ")
@@ -204,11 +210,10 @@ class DocHelp(commands.Cog):
     async def on_command_add(self, command, after: bool = False):
         if command.callback.__doc__:
             extras = command.extras if command.extras else {
-                "headding": command.__original_kwargs__.get("headding", {})
-                    or ({"ja": command.description} if command.description else {}),
-                "parent": command.__original_kwargs__.get("category", "Other")
+                "headding": ({"ja": command.description} if command.description else {}),
+                "parent": "Other"
             }
-            if extras and extras["headding"] and not after and command.parent is None:
+            if extras and "headding" in extras and extras["headding"] and not after and command.parent is None:
                 # ドキュメンテーションをマークダウンにする。
                 data = self.parse(command)
                 # もしカテゴリーが設定されているならそのカテゴリーコマンドを入れる。
@@ -251,7 +256,7 @@ class DocHelp(commands.Cog):
 
     async def output(self, path: str) -> None:
         """作ったヘルプのデータをjson形式でファイルに出力します。
-        
+
         Parameters
         ----------
         path : str
@@ -261,7 +266,7 @@ class DocHelp(commands.Cog):
 
     async def input(self, path: str) -> None:
         """util.dochelpが読み込める形式のjsonファイルのヘルプを読み込みます。
-        
+
         Parameters
         ----------
         path : str
@@ -322,5 +327,5 @@ class DocHelp(commands.Cog):
         del self.data[category][help_name]
 
 
-def setup(bot):
-    bot.add_cog(DocHelp(bot))
+async def setup(bot):
+    await bot.add_cog(DocHelp(bot))

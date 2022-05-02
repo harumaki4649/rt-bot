@@ -3,7 +3,7 @@
 from discord.ext import commands
 import discord
 
-from util import DatabaseManager
+from util.mysql_manager import DatabaseManager
 
 
 class DataManager(DatabaseManager):
@@ -124,5 +124,5 @@ class AutoRole(commands.Cog, DataManager):
                 await self.delete(member.guild.id)
 
 
-def setup(bot):
-    bot.add_cog(AutoRole(bot))
+async def setup(bot):
+    await bot.add_cog(AutoRole(bot))

@@ -6,7 +6,9 @@ from discord.ext import commands
 import discord
 
 from util import securl, DatabaseManager
+
 from re import findall
+from urllib.parse import urlparse
 
 if TYPE_CHECKING:
     from aiomysql import Pool, Cursor
@@ -71,7 +73,7 @@ class UrlChecker(commands.Cog, DataManager):
     @commands.cooldown(1, 10, commands.BucketType.channel)
     async def securl(
         self, ctx: commands.Context, *, url: str,
-        force: bool = "", author = None):
+            force: bool = "", author=None):
         """!lang ja
         --------
         SecURLを使用して渡されたURLのスクリーンショットを撮り危険性をチェックします。
@@ -191,9 +193,9 @@ class UrlChecker(commands.Cog, DataManager):
                 or message.guild.id not in self.cache):
             return
 
-        if (("http://" in message.content or "https://" in message.content
-                ) and "https://discord.com" not in message.content
-                and message.channel.id not in self.channel_runnings
+        if (("http://" in message.content or "https://" in message.content)
+            and "https://discord.com" not in message.content
+            and message.channel.id not in self.channel_runnings
                 and not message.content.startswith(tuple(self.bot.command_prefix))):
             try:
                 await message.add_reaction(self.EMOJI)
@@ -216,7 +218,7 @@ class UrlChecker(commands.Cog, DataManager):
                 url for url in findall(
                     r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+",
                     reaction.message.content
-                ) if not url.startswith("https://discord.com")
+                ) if urlparse(url).netloc != "discord.com"
             ]
             if len(urls) < 4:
                 ctx = await self.bot.get_context(reaction.message)
@@ -227,10 +229,10 @@ class UrlChecker(commands.Cog, DataManager):
                     )
             else:
                 await reaction.message.channel.send(
-                    f"{user.author.mention}, 四つ以上のURLは同時にちぇっくすることができません。"
+                    f"{user.author.mention}, 四つ以上のURLは同時にチェックすることができません。"
                 )
             self.channel_runnings.remove(reaction.message.channel.id)
 
 
-def setup(bot):
-    bot.add_cog(UrlChecker(bot))
+async def setup(bot):
+    await bot.add_cog(UrlChecker(bot))

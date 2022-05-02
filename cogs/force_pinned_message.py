@@ -8,7 +8,8 @@ from time import time
 from discord.ext import commands, tasks
 import discord
 
-from util import RT, DatabaseManager as OldDatabaseManager
+from util import RT
+from util.mysql_manager import DatabaseManager as OldDatabaseManager
 from util import DatabaseManager, markdowns
 
 from aiomysql import Pool, Cursor
@@ -230,7 +231,7 @@ class ForcePinnedMessage(commands.Cog, DataManager):
             if content.startswith("# "):
                 # もし埋め込みならjsonにする。
                 content = "<" + dumps(
-                    markdowns.embed(
+                    markdowns.create_embed(
                         content, color=ctx.author.color
                     ).to_dict()
                 ) + ">"
@@ -375,5 +376,5 @@ class ForcePinnedMessage(commands.Cog, DataManager):
             ), custom[-1] == "1"
 
 
-def setup(bot):
-    bot.add_cog(ForcePinnedMessage(bot))
+async def setup(bot):
+    await bot.add_cog(ForcePinnedMessage(bot))

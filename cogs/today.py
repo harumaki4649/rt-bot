@@ -3,7 +3,7 @@
 from discord.ext import commands, tasks
 import discord
 
-from util import DatabaseManager
+from util.mysql_manager import DatabaseManager
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
@@ -151,5 +151,5 @@ class Today(commands.Cog, DataManager):
             self.yet = True
 
 
-def setup(bot):
-    bot.add_cog(Today(bot))
+async def setup(bot):
+    await bot.add_cog(Today(bot))

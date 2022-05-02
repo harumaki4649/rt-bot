@@ -4,8 +4,8 @@ from typing import Union
 
 from discord.ext import commands, tasks
 import discord
-
-from util import DatabaseManager, RT
+from util.mysql_manager import DatabaseManager
+from util import RT
 
 
 class DataManager(DatabaseManager):
@@ -239,5 +239,5 @@ class VoiceRole(commands.Cog, DataManager):
         await self.on_member("leave", member, before)
 
 
-def setup(bot):
-    bot.add_cog(VoiceRole(bot))
+async def setup(bot):
+    await bot.add_cog(VoiceRole(bot))

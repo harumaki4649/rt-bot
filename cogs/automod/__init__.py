@@ -1,4 +1,4 @@
-# RT - AutoMod
+# Free RT - AutoMod
 
 from typing import Callable, Coroutine, Literal, Union, Any, Dict, Tuple, List
 
@@ -15,6 +15,8 @@ from .cache import Cache
 def reply(description: str, color: str = "normal", **kwargs) -> dict:
     "埋め込み返信用のkwargsを作ります。"
     return {"title": "AutoMod", "description": description, "color": color, **kwargs}
+
+
 OK = "Ok"
 
 
@@ -39,6 +41,7 @@ class AutoMod(commands.Cog, DataManager):
         return self.bot.print("[AutoMod]", *args, **kwargs)
 
     Sendable = Union[commands.Context, discord.TextChannel]
+
     async def setting(
         self, function: Callable[..., Coroutine], channel: Sendable, *args, **kwargs
     ) -> discord.Message:
@@ -85,7 +88,7 @@ class AutoMod(commands.Cog, DataManager):
         """!lang ja
         --------
         自動モデレーション機能です。  
-        `rt!automod`でこの機能を有効または無効にすることができます。
+        `rf!automod`でこの機能を有効または無効にすることができます。
 
         Notes
         -----
@@ -107,7 +110,7 @@ class AutoMod(commands.Cog, DataManager):
         Notes
         -----
         Administrator will not be punished.  
-        You can enable this feature with `rt!automod`.
+        You can enable this feature with `rf!automod`.
 
         Warnings
         --------
@@ -121,11 +124,11 @@ class AutoMod(commands.Cog, DataManager):
             # もしまだAutoModを有効にしていない状態でこのコマンドのサブコマンドを実行したならエラーを起こす。
             await ctx.trigger_typing()
             assert ctx.guild.id in self.enabled, "このサーバーではAutoModが有効になっていません。" \
-                "\n`rt!automod`を実行してください。"
+                "\n`rf!automod`を実行してください。"
             await self.prepare_cache_guild(ctx.guild)
         else:
             if ctx.message.content.endswith(("automod", "amd", "自動モデレーション")):
-                await self.reply(ctx, OK, add_or_remove = await self.toggle_automod(ctx.guild.id))
+                await self.reply(ctx, OK, add_or_remove=await self.toggle_automod(ctx.guild.id))
             else:
                 await self.reply(ctx, "使用方法が違います。")
 
@@ -398,7 +401,7 @@ class AutoMod(commands.Cog, DataManager):
         --------
         招待リンク規制機能です。  
         この機能を有効にすると招待リンクを作れないようにすることができます。  
-        この機能を有効にするには`rt!automod invites`と実行してください。
+        この機能を有効にするには`rf!automod invites`と実行してください。
 
         Aliases
         -------
@@ -408,7 +411,7 @@ class AutoMod(commands.Cog, DataManager):
         --------
         This is an invitation link restriction function.  
         If you enable this feature, you can prevent people from creating invitation links.  
-        To enable this feature, run `rt!automod invites`.
+        To enable this feature, run `rf!automod invites`.
 
         Aliases
         -------
@@ -475,13 +478,13 @@ class AutoMod(commands.Cog, DataManager):
         --------
         招待リンク削除機能です。  
         これを有効にするとメッセージに招待リンクが含まれていた際にそのメッセージを消すようにすることができます。  
-        この機能を有効にする場合は`rt!automod deleter`と実行してください。
+        この機能を有効にする場合は`rf!automod deleter`と実行してください。
 
         !lang en
         --------
         This is the Remove Invitation Link function.  
         If you enable this feature, you can delete a message when it contains an invitation link.  
-        To enable this feature, run `rt!automod deleter`."""
+        To enable this feature, run `rf!automod deleter`."""
         if not ctx.invoked_subcommand:
             await self.setting(
                 self.ignore_setting, ctx, "toggle", "invite_deleter", None, OK
@@ -528,7 +531,7 @@ class AutoMod(commands.Cog, DataManager):
         if mode == "list":
             await self.reply(ctx, "\n".join(
                 f"・{word}" for word in self.caches[ctx.guild.id][0]
-                    .get("invite_deleter", ())
+                .get("invite_deleter", ())
             ))
         else:
             assert obj is not None, "使用方法が違います。"
@@ -634,5 +637,5 @@ class AutoMod(commands.Cog, DataManager):
             await trial_invite(self.caches[invite.guild.id][0], invite)
 
 
-def setup(bot):
-    bot.add_cog(AutoMod(bot))
+async def setup(bot):
+    await bot.add_cog(AutoMod(bot))

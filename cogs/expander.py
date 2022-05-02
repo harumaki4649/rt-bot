@@ -5,7 +5,8 @@ from typing import Literal
 from discord.ext import commands
 import discord
 
-from util import RT, DatabaseManager
+from util import RT
+from util.mysql_manager import DatabaseManager
 
 from re import findall
 
@@ -64,7 +65,7 @@ class DataManager(DatabaseManager):
 
 class Expander(commands.Cog, DataManager):
 
-    PATTERN =  (
+    PATTERN = (
         "https://(ptb.|canary.)?discord(app)?.com/channels/"
         "(?P<guild>[0-9]{18})/(?P<channel>[0-9]{18})/(?P<message>[0-9]{18})"
     )
@@ -198,5 +199,5 @@ class Expander(commands.Cog, DataManager):
             ...
 
 
-def setup(bot):
-    bot.add_cog(Expander(bot))
+async def setup(bot):
+    await bot.add_cog(Expander(bot))

@@ -3,7 +3,8 @@
 from discord.ext import commands, tasks
 import discord
 
-from util import RT, DatabaseManager
+from util import RT
+from util.mysql_manager import DatabaseManager
 
 
 class DataManager(DatabaseManager):
@@ -149,8 +150,7 @@ class ChannelStatus(commands.Cog, DataManager):
             channel = self.bot.get_channel(channel_id)
             if channel:
                 if channel.name != (
-                        text := self.replace_text(text, channel.guild)
-                    ):
+                        text := self.replace_text(text, channel.guild)):
                     try:
                         await channel.edit(
                             name=text, reason="ステータス更新のため。/To update status."
@@ -159,5 +159,5 @@ class ChannelStatus(commands.Cog, DataManager):
                         self._last_exception = e
 
 
-def setup(bot):
-    bot.add_cog(ChannelStatus(bot))
+async def setup(bot):
+    await bot.add_cog(ChannelStatus(bot))
